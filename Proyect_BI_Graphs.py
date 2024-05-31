@@ -1,19 +1,8 @@
 import tkinter as tk
-from client.gui_app import Frame 
+from client.gui_app import Frame
+from client.db_connection import prueba
 
-def main ():
-    root = tk.Tk()
+    # Pasar el nombre del procedimiento al crear la instancia de Frame
+app = Frame()
 
-    root.title('Proyect_BI')
-    ##root.iconbitmap('img/Nombre de archivo .ico')
-
-    root.resizable(0,0)
-
-    app = Frame(root = root)
-
-    app.mainloop() ##final de la ejecución de nuestra aplicación
-    
-
-    pass
-if __name__ == '__main__':
-    main()
+app.mainloop() ##final de la ejecución de nuestra aplicación
