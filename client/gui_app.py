@@ -1,27 +1,23 @@
-from tkinter import ttk, font
+from tkinter import font
 import tkinter as tk
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import util.util_imagenes as util_img
 from config import COLOR_BARRA_SUPERIOR, COLOR_MENU_CURSOR_ENCIMA, COLOR_CUERPO_PRINCIPAL, COLOR_MENU_LATERAL
 import util.util_ventana as util_ventana
 from .frames import Trabajador,Sedes,Pagos
+from PIL import Image, ImageFont, ImageDraw
 
 class Frame(tk.Tk):
     def __init__(self):
         super().__init__()
         self.logo = util_img.leer_imagen('./imagenes/logotipo.png', (100, 100))
         self.config_window()
+        self.frames = {}
         self.paneles()
         self.controles_barra_superior()
-        self.frames = {}
-        for F in (Trabajador, Sedes,Pagos):
-            frame = F(self.cuerpo_principal)
-            self.frames[F]=frame
-
         self.controles_menu_lateral()
-
-
+        
+    
+    
         
     def config_window(self):
         # Configuración inicial de la ventana
@@ -39,6 +35,24 @@ class Frame(tk.Tk):
 
         self.cuerpo_principal = tk.Frame(self, bg=COLOR_CUERPO_PRINCIPAL)
         self.cuerpo_principal.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+        
+
+        container = tk.Frame(self.cuerpo_principal)
+        container.pack(
+            side=tk.TOP,
+            fill=tk.BOTH,
+            expand= True
+        )
+        container.configure(background=COLOR_CUERPO_PRINCIPAL)
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
+
+         
+        for F in (Trabajador, Sedes, Pagos):
+            frame = F(container, self)
+            self.frames[F] = frame
+            frame.grid(row = 0, column = 0, sticky = tk.NSEW)
+
 
     def controles_barra_superior(self):
         font_awesome = font.Font(family='FontAwesome', size=12)
@@ -49,7 +63,11 @@ class Frame(tk.Tk):
         self.labelTitulo.pack(side=tk.LEFT)
 
         # Botón del menú lateral
-        self.buttonMenuLateral = tk.Button(self.barra_superior, text="\uf0c9", font=font_awesome, command=self.toggle_panel, bd=0, bg=COLOR_BARRA_SUPERIOR, fg="white")
+        self.buttonMenuLateral = tk.Button(self.barra_superior, 
+                                           text="\uf00b",
+                                           font=font_awesome,
+                                           command=self.toggle_panel,
+                                           bd=0, bg=COLOR_BARRA_SUPERIOR, fg="white")
         self.buttonMenuLateral.pack(side=tk.LEFT)
 
     def controles_menu_lateral(self):
@@ -61,22 +79,21 @@ class Frame(tk.Tk):
         self.labelPerfil = tk.Label(self.menu_lateral, image=self.logo, bg=COLOR_MENU_LATERAL)
         self.labelPerfil.pack(side=tk.TOP, pady=10)
 
-        self.buttonTrabajador = tk.Button(self.menu_lateral, command=self.show_frame(Trabajador))
-        self.buttonSede = tk.Button(self.menu_lateral,command=self.show_frame(Sedes))
-        self.buttonPagos = tk.Button(self.menu_lateral,command=self.show_frame(Pagos))
-
+        self.buttonTrabajador = tk.Button(self.menu_lateral, text='Trabajador')
+        self.buttonSede = tk.Button(self.menu_lateral, text='Sede')
+        self.buttonPagos = tk.Button(self.menu_lateral, text='Pagos')
         buttons_info = [
-            ('Trabajador', '\uf109', self.buttonTrabajador),
-            ('Sede', '\uf109', self.buttonSede),
-            ('Pagos', '\uf109', self.buttonPagos),
+            ('Trabajador', "\uf109", self.buttonTrabajador,lambda: self.show_frame(Trabajador)),
+            ('Sede', '\uf109', self.buttonSede,lambda: self.show_frame(Sedes)),
+            ('Pagos', '\uf109', self.buttonPagos,lambda: self.show_frame(Pagos)),
         ]
 
-        for text, icon, button in buttons_info:
-            self.configurar_boton_menu(button, text, icon, font_awesome, ancho_menu, alto_menu)
+        for text, icon, button,comando in buttons_info:
+            self.configurar_boton_menu(button, text, icon, font_awesome, ancho_menu, alto_menu, comando)
 
-    def configurar_boton_menu(self, button, text, icon, font_awesome, ancho_menu, alto_menu):
+    def configurar_boton_menu(self, button, text, icon, font_awesome, ancho_menu, alto_menu, comando):
         button.config(text=f'  {icon}   {text}', anchor="w", font=font_awesome, bd=0, bg=COLOR_MENU_LATERAL,
-                      fg="white", width=ancho_menu, height=alto_menu)
+                      fg="white", width=ancho_menu, height=alto_menu, command = comando)
         button.pack(side=tk.TOP)
         self.bind_hover_events(button)
 
@@ -96,8 +113,9 @@ class Frame(tk.Tk):
             self.menu_lateral.pack_forget()
         else:
             self.menu_lateral.pack(side=tk.LEFT, fill='y')
-    def show_frame(self, frame_name):
-        print("entre")
-        frame = self.frames[frame_name]
-        print(frame)
+
+    def show_frame(self, container):
+        frame = self.frames[container]
         frame.tkraise()
+
+
