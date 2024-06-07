@@ -16,9 +16,6 @@ class Frame(tk.Tk):
         self.controles_barra_superior()
         self.controles_menu_lateral()
         
-    
-    
-        
     def config_window(self):
         # Configuración inicial de la ventana
         self.title('Gráficos Tesis Proyect')
@@ -83,16 +80,16 @@ class Frame(tk.Tk):
         self.buttonSede = tk.Button(self.menu_lateral, text='Sede')
         self.buttonPagos = tk.Button(self.menu_lateral, text='Pagos')
         buttons_info = [
-            ('Trabajador', "\uf109", self.buttonTrabajador,lambda: self.show_frame(Trabajador)),
-            ('Sede', '\uf109', self.buttonSede,lambda: self.show_frame(Sedes)),
-            ('Pagos', '\uf109', self.buttonPagos,lambda: self.show_frame(Pagos)),
+            ('Trabajador', self.buttonTrabajador,lambda: self.show_frame(Trabajador)),
+            ('Sede', self.buttonSede,lambda: self.show_frame(Sedes)),
+            ('Pagos',  self.buttonPagos,lambda: self.show_frame(Pagos)),
         ]
 
-        for text, icon, button,comando in buttons_info:
-            self.configurar_boton_menu(button, text, icon, font_awesome, ancho_menu, alto_menu, comando)
+        for text, button,comando in buttons_info:
+            self.configurar_boton_menu(button, text , font_awesome, ancho_menu, alto_menu, comando)
 
-    def configurar_boton_menu(self, button, text, icon, font_awesome, ancho_menu, alto_menu, comando):
-        button.config(text=f'  {icon}   {text}', anchor="w", font=font_awesome, bd=0, bg=COLOR_MENU_LATERAL,
+    def configurar_boton_menu(self, button, text, font_awesome, ancho_menu, alto_menu, comando):
+        button.config(text=f'  {text}', anchor="w", font=font_awesome, bd=0, bg=COLOR_MENU_LATERAL,
                       fg="white", width=ancho_menu, height=alto_menu, command = comando)
         button.pack(side=tk.TOP)
         self.bind_hover_events(button)
