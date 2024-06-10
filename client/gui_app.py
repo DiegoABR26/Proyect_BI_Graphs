@@ -3,7 +3,7 @@ import tkinter as tk
 import util.util_imagenes as util_img
 from config import COLOR_BARRA_SUPERIOR, COLOR_MENU_CURSOR_ENCIMA, COLOR_CUERPO_PRINCIPAL, COLOR_MENU_LATERAL
 import util.util_ventana as util_ventana
-from .frames import Trabajador,Sedes,Pagos
+from models.frames import Trabajador,Pagos,Sedes
 from PIL import Image, ImageFont, ImageDraw
 
 class Frame(tk.Tk):
@@ -50,13 +50,12 @@ class Frame(tk.Tk):
             self.frames[F] = frame
             frame.grid(row = 0, column = 0, sticky = tk.NSEW)
 
-
     def controles_barra_superior(self):
         font_awesome = font.Font(family='FontAwesome', size=12)
 
         # Etiqueta de título
         self.labelTitulo = tk.Label(self.barra_superior, text='BYG RESGUARDO')
-        self.labelTitulo.config(fg="#fff", font={'Roboto', 15}, bg=COLOR_BARRA_SUPERIOR, pady=10, width=16)
+        self.labelTitulo.config(fg="black", font={'Roboto', 15}, bg=COLOR_BARRA_SUPERIOR, pady=10, width=16)
         self.labelTitulo.pack(side=tk.LEFT)
 
         # Botón del menú lateral
@@ -64,7 +63,7 @@ class Frame(tk.Tk):
                                            text="\uf00b",
                                            font=font_awesome,
                                            command=self.toggle_panel,
-                                           bd=0, bg=COLOR_BARRA_SUPERIOR, fg="white")
+                                           bd=0, bg=COLOR_BARRA_SUPERIOR, fg="black")
         self.buttonMenuLateral.pack(side=tk.LEFT)
 
     def controles_menu_lateral(self):
