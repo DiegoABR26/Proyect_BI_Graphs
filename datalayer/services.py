@@ -11,6 +11,11 @@ def consulta_horario():
     if data.status_code == 200:
         data = data.json()
         for e in data['result']:
-            table_data.append(e['id_Horario'])
-    print(table_data)
+            row = []
+            row.append(e['id_Horario'])
+            row.append(e['hora_Inicio'])
+            row.append(e['hora_Final'])
+            row.append(e['canT_HORAS_TRABJ'])
+            row.append(e['actividad'])
+            table_data.append(row)
     return table_data

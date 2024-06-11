@@ -29,8 +29,29 @@ class Graficos():
          canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
 
-      def create_grafico_circular():
-         print('s')
+      def create_grafico_circular(frame, labels, data):
+         plt.style.use('_mpl-gallery-nogrid')
+
+         
+         
+         colors = plt.get_cmap('Blues')(np.linspace(0.2, 0.7, len(data)))
+
+         # plot
+         fig, ax = plt.subplots()
+         ax.pie(data,labels=labels, colors=colors, radius=3, center=(4, 4),
+               wedgeprops={"linewidth": 1, "edgecolor": "white"}, frame=True)
+
+         ax.set(xlim=(0, 8), xticks=np.arange(1, 8),
+               ylim=(0, 8), yticks=np.arange(1, 8))
+
+         canvas = FigureCanvasTkAgg(fig, master=frame)
+         canvas.draw()
+         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+
+
+
+
 
       def create_grafico_table(frame, table_columns, table_data):
          table = ttk.Treeview(master=frame, columns=table_columns, show ='headings')
@@ -38,15 +59,17 @@ class Graficos():
          for column in table_columns:
             table.heading(column=column, text=column)
             table.column(column=column,width=70)
-
-         for row_data in table_data:
-             table.insert(parent="",index="end", values=row_data)
+         if len(table_data) > 0:
+            for row_data in table_data:
+               table.insert(parent="",index="end", values=row_data)
+         else:
+            table.insert(parent="",index="end", values="No hay data que mostrar")
 
          style = ttk.Style()
          style.theme_use('default')
          style.configure("Treeview", background="#917FB3", fieldbackground="#917FB3", foreground ="white")
          style.configure("Treeview.heading", background="#917FB3", fieldbackground="#917FB3", foreground ="white")
          style.map('Treeview', background=[("selected","#E5BEEC")])
-         table.place(x=395, y=225, height=260)
+         table.pack(side=tk.TOP,fill=tk.BOTH,expand=True)
             
           
