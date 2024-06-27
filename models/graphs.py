@@ -4,6 +4,8 @@ import tkinter as tk
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import mplcursors
+
 
 class Graficos():
       def __init__():
@@ -28,21 +30,25 @@ class Graficos():
          canvas.draw()
          canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
+      
 
       def create_grafico_circular(frame, labels, data):
-         plt.style.use('_mpl-gallery-nogrid')
+         fig, ax = plt.subplots(figsize=(5,3), subplot_kw=dict(aspect="equal"), facecolor="#917FB3")
 
-         
-         
-         colors = plt.get_cmap('Blues')(np.linspace(0.2, 0.7, len(data)))
+         colors = ["#9ec4bb","#ccccbb","#eed7c5"]
 
-         # plot
-         fig, ax = plt.subplots()
-         ax.pie(data,labels=labels, colors=colors, radius=3, center=(4, 4),
-               wedgeprops={"linewidth": 1, "edgecolor": "white"}, frame=True)
-
-         ax.set(xlim=(0, 8), xticks=np.arange(1, 8),
-               ylim=(0, 8), yticks=np.arange(1, 8))
+         wedges, texts, autotexts= ax.pie(data, 
+                                           autopct = lambda pct:f"{pct:.1f}%\n({int(np.round(pct/100.*np.sum(data))):d}",
+                                          textprops = dict(color="black"),
+                                          colors=colors,
+                                          )
+         ax.legend(
+                  wedges, labels,
+                  title="Estados",
+                  loc="center left",
+                  bbox_to_anchor=(1,0,0.5,1))
+         plt.setp(autotexts, size = 8, weight = "bold")
+         ax.set_title("Trabajadores Pagados por Periodo")
 
          canvas = FigureCanvasTkAgg(fig, master=frame)
          canvas.draw()

@@ -15,11 +15,14 @@ class Frame(tk.Tk):
         self.paneles()
         self.controles_barra_superior()
         self.controles_menu_lateral()
-        
+        self.after_ids = []  # Lista para almacenar los IDs de los eventos after
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)  # Captura el evento de cierre de la ventana
+
     def config_window(self):
         # Configuración inicial de la ventana
         self.title('Gráficos Tesis Proyect')
         self.iconbitmap("./imagenes/logotipo.ico")
+        self.state('zoomed')
         w, h = 1200, 600
         util_ventana.centrar_ventana(self, w, h)
 
@@ -109,6 +112,18 @@ class Frame(tk.Tk):
             self.menu_lateral.pack_forget()
         else:
             self.menu_lateral.pack(side=tk.LEFT, fill='y')
+
+    def schedule_after(self, delay, func):
+        # Programa un evento after y almacena su ID en la lista
+        after_id = self.after(delay, func)
+        self.after_ids.append(after_id)
+        return after_id
+
+    def on_closing(self):
+        # Cancelar todos los eventos after programados
+        for after_id in self.after_ids:
+            self.after_cancel(after_id)
+        self.destroy()
 
     def show_frame(self, container):
         frame = self.frames[container]

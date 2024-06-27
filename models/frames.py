@@ -39,11 +39,12 @@ class Trabajador(tk.Frame):
 
             
             list = db_connection.ejecutar_usp_Trabajadores_cancelados('042024')
-
-            for e in list:
-                  pagado = 0
-                  pendiente = 0
-                  no_pagado = 0
+            
+            pagado = 0
+            pendiente = 0
+            no_pagado = 0
+            for e in list: 
+                 # print(e[4])
                   if e[4] =="PAGADO":
                         pagado += 1
                   elif e[4] =="PENDIENTE":
@@ -76,10 +77,14 @@ class Pagos(tk.Frame):
             
             self.frames_pagos_top = {}#array de los frames del top
 
-            for F in range(3): #creamos los 4 frames que contiene el frame top
+            for F in range(2): #creamos los 4 frames que contiene el frame top
                   frame = customtkinter.CTkFrame(master=self.frame_top,fg_color="#5F4A87",border_width=1, border_color='#E5BEEC')
                   self.frames_pagos_top[F] = frame
                   frame.pack(pady=5,padx=5,side=tk.RIGHT ,fill=tk.BOTH, expand = True)
+
+            self.frame_top_left = customtkinter.CTkFrame(master=self.frames_pagos_top[1], fg_color="gray",border_width=1,border_color="white")
+            self.frame_top_left.pack(padx=5,pady=5,side=tk.BOTTOM, fill = tk.BOTH)
+            customtkinter.CTkLabel(master=self.frame_top_left, text="ARRIBA ALIANZA", fg_color="gray").pack(side=tk.LEFT, padx=5, pady=5)
 
            
 

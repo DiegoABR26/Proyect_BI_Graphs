@@ -1,12 +1,14 @@
 import pyodbc
 
-conexion = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};'
+
+
+def ejecutar_sp(procedimiento):
+    conexion = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};'
                             'SERVER=KATTIA\\BYGRESGUARDO;'
                             'DATABASE=BYG_RR_HH;  '
                             'UID=sa;'
                             'PWD=Razon2623*')
-
-def ejecutar_sp(procedimiento):
+    
     cursor = conexion.cursor()
     try:
         filas = []
@@ -18,12 +20,18 @@ def ejecutar_sp(procedimiento):
             filas = []
         else:
             raise
-#    finally:
-#        conexion.close()
+    finally:
+        conexion.close()
     
     return filas
 
-def ejecutar_usp_Trabajadores_cancelados(params:tuple):
+def ejecutar_usp_Trabajadores_cancelados(params:tuple):  
+    conexion = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};'
+                            'SERVER=KATTIA\\BYGRESGUARDO;'
+                            'DATABASE=BYG_RR_HH;  '
+                            'UID=sa;'
+                            'PWD=Razon2623*')
+    
     cursor = conexion.cursor()
     try:
         filas = []
@@ -45,7 +53,7 @@ def ejecutar_usp_Trabajadores_cancelados(params:tuple):
             filas = []
         else:
             raise
-#    finally:
-#        conexion.close()
+    finally:
+        conexion.close()
     
     return filas
