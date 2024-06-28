@@ -9,7 +9,7 @@ from PIL import Image, ImageFont, ImageDraw
 class Frame(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.logo = util_img.leer_imagen('./imagenes/logotipo.png', (100, 100))
+        self.logo = util_img.leer_imagen_tk('./imagenes/logotipo.png', (100, 100))
         self.config_window()
         self.frames = {}
         self.paneles()
@@ -22,7 +22,7 @@ class Frame(tk.Tk):
         # Configuración inicial de la ventana
         self.title('Gráficos Tesis Proyect')
         self.iconbitmap("./imagenes/logotipo.ico")
-        self.state('zoomed')
+        #self.state('zoomed')
         w, h = 1200, 600
         util_ventana.centrar_ventana(self, w, h)
 
@@ -58,7 +58,7 @@ class Frame(tk.Tk):
 
         # Etiqueta de título
         self.labelTitulo = tk.Label(self.barra_superior, text='BYG RESGUARDO')
-        self.labelTitulo.config(fg="black", font={'Roboto', 15}, bg=COLOR_BARRA_SUPERIOR, pady=10, width=16)
+        self.labelTitulo.config(fg="white", font={'Roboto', 15}, bg=COLOR_BARRA_SUPERIOR, pady=10, width=16)
         self.labelTitulo.pack(side=tk.LEFT)
 
         # Botón del menú lateral
