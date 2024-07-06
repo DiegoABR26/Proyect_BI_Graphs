@@ -10,18 +10,12 @@ class Graficos():
       def __init__():
          super().__init__()
 
-      def create_grafico_barras(frame,data,labels,xlabel,ylabel,title):
-         # Datos de ejemplo - reemplaza esto con la consulta a la base de datos
-         #periodos = ['012024', '022024', '032024', '042024', '052024']
-         #montos = [1000, 1500, 2000, 2500, 3000]
-
+      def create_grafico_line(frame,data,labels,xlabel,ylabel,title):
          # Crear la figura de matplotlib
-         fig = Figure(figsize=(2, 2), dpi=111)
+         fig = Figure(figsize=(1, 2), dpi=111)
          ax = fig.add_subplot(111)
-         ax.plot(labels, data)
+         ax.plot(labels, data, "o-b")
 
-         ax.set_xlabel('{}'.format(xlabel), fontsize=1)
-         ax.set_ylabel('{}'.format(ylabel),fontsize=1)
          ax.set_title('{}'.format(title),fontsize=10)
 
          # Crear el canvas de tkinter para la figura de matplotlib
@@ -30,8 +24,8 @@ class Graficos():
          canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
  
 
-      def create_grafico_circular(frame, labels, data,title,title_legend="leyenda",tipo=1):
-         fig, ax = plt.subplots(figsize=(5, 3), subplot_kw=dict(aspect="equal"), facecolor="white")
+      def create_grafico_circular(frame, labels, data, title, title_legend="leyenda", tipo=1):
+         fig, ax = plt.subplots(figsize=(5, 2), subplot_kw=dict(aspect="equal"), facecolor="white")
          
          colors = ["#6698F6", "#6EE1F8", "#F7FAA3"]
          wedgeprops = {"edgecolor": "white", "linewidth":1}
@@ -52,7 +46,7 @@ class Graficos():
          if tipo == 1:
             canvas = FigureCanvasTkAgg(fig, master=frame)
             canvas.draw()
-            canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+            canvas.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
             
             def on_hover(event):
