@@ -9,6 +9,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 class Graficos():
       def __init__():
          super().__init__()
+
       @staticmethod
       def create_grafico_line(frame, data, labels, xlabel, ylabel, title, canvas=None, ax=None):
          if canvas and ax:
@@ -23,10 +24,11 @@ class Graficos():
                # Crear la figura de matplotlib
                fig = Figure(figsize=(5, 2), dpi=100)
                ax = fig.add_subplot(111)
-               ax.plot(labels, data, "o-b")
+               ax.plot(labels, data, marker="o", color = "#6698F6")
                ax.set_title(title, fontsize=10)
                ax.set_xlabel(xlabel)
                ax.set_ylabel(ylabel)
+
                # Crear el canvas de tkinter para la figura de matplotlib
                canvas = FigureCanvasTkAgg(fig, master=frame)
                canvas.draw()
