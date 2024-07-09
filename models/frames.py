@@ -12,7 +12,7 @@ class Trabajador(tk.Frame):
       def __init__(self, parent, controller):
             super().__init__(parent)
             self.configure(bg=cfg.COLOR_CUERPO_PRINCIPAL)
-            self.init_widgets_trabajador()
+            #self.init_widgets_trabajador()
             self.line_chart_canvas = None
             self.line_chart_ax = None
             self.circular_chart_canvas = None
@@ -26,7 +26,7 @@ class Trabajador(tk.Frame):
             self.frame_top.pack(side=tk.TOP, fill=tk.BOTH, expand = True)
 
             for F in range(3): #creamos los 4 frames que contiene el frame top
-                  frame = ctk.CTkFrame(master=self.frame_top,fg_color="#5F4A87",border_width=1, border_color='#E5BEEC')
+                  frame = ctk.CTkFrame(master=self.frame_top,fg_color="#5F4A87",border_width=3, border_color='black')
                   self.frames_trabajador_top[F] = frame
                   frame.pack(pady=5,padx=5,side=tk.RIGHT ,fill=tk.BOTH, expand = True)          
 
@@ -36,7 +36,7 @@ class Trabajador(tk.Frame):
             self.frame_bottom.pack(side=tk.BOTTOM, fill=tk.BOTH, expand = True )
 
             for F in range(2):#creamos los 4 frames que contiene el frame bottom
-                  frame = ctk.CTkFrame(master=self.frame_bottom,fg_color="#5F4A87",border_width=1, border_color='#E5BEEC')
+                  frame = ctk.CTkFrame(master=self.frame_bottom,fg_color="#5F4A87",border_width=3, border_color='black')
                   self.frames_trabajador_bottom[F] = frame
                   frame.pack(pady=5,padx=5,side=tk.RIGHT, fill=tk.BOTH, expand = True)
 
@@ -79,15 +79,10 @@ class Pagos(tk.Frame):
             self.configure(bg=cfg.COLOR_CUERPO_PRINCIPAL)
             self.periodos = []
             self.option_selected = tk.StringVar()
-            self.option_selected.trace_add('write', self.update_chart)  # Detectar cambios en la opción seleccionada
+            self.option_selected.trace("w", self.update_chart)  # Detectar cambios en la opción seleccionada
             self.asignar_variables_general()
             self.cuerpo_principal()
             self.init_widgets_Pagos()
-            self.line_chart_canvas = None
-            self.line_chart_ax = None
-            self.circular_chart_canvas = None
-            self.circular_chart_ax = None
-            self.table = None
 
       def asignar_variables_general(self):
             month = date.today().month#  Tenemos que colocar que extraiga la fecha de hoy
@@ -134,8 +129,9 @@ class Pagos(tk.Frame):
                         month = 12
                   j += 1
       def cuerpo_principal(self):
-            self.cuerpo_principal_top=ctk.CTkFrame(master=self, fg_color="white")
+            self.cuerpo_principal_top=ctk.CTkFrame(master=self, fg_color="#2C3F59")
             self.cuerpo_principal_top.pack(padx=5,pady=5, anchor = "w" ,side=tk.TOP)
+
             #realizar la creación de un input tipo 
             self.option_menu = ctk.CTkOptionMenu(self.cuerpo_principal_top,
                                                  values = self.periodos,
@@ -144,17 +140,17 @@ class Pagos(tk.Frame):
                                                  button_color="#F5E88C",
                                                  button_hover_color="#F5E874",
                                                  variable = self.option_selected  #Asociar la variable
+                                                 ,width=20, height=40
                                                  )
             self.option_menu.grid(row=0,column=0,padx=5,pady=5)
             self.option_selected.set(self.periodos[0])
             
             #Creamos el Label que contiene el valor máximo
-            self.frame_dialog = ctk.CTkFrame(master=self.cuerpo_principal_top, fg_color="#F5D971",border_width=1,border_color="white")
+            self.frame_dialog = ctk.CTkFrame(master=self.cuerpo_principal_top, fg_color="#F2AF5C")
             self.frame_dialog.grid(row=0,column=1,padx=5,pady=5)
 
-
             ctk.CTkLabel(master=self.frame_dialog,
-                              text="MONTO TOTAL DE PAGOS: ${}".format(dframeCancelados_actual["MONTO"].sum()),
+                              text="MONTO TOTAL DE PAGOS REALIZADO EN EL PERIODO ACTUAL: S/ {}".format(dframeCancelados_actual["MONTO"].sum()),
                               text_color="black", width=10, height=30
                         ).grid(row=0,column=0,padx=5,pady=5)
 
@@ -165,12 +161,12 @@ class Pagos(tk.Frame):
             self.frame_top.pack(side=tk.TOP, fill=tk.BOTH, expand = True)
             
             for F in range(1): #creamos 1 frame que contiene el frame top(modificamos el número de recuadros requeridos)
-                  frame = ctk.CTkFrame(master=self.frame_top, fg_color="#FFFFFF")
+                  frame = ctk.CTkFrame(master=self.frame_top, fg_color="#2C3F59")
                   self.frames_pagos_top[F] = frame
                   frame.pack(pady=5,padx=5,side=tk.TOP ,fill=tk.BOTH, expand = True)
 
             #Creamos el Frame que almacenará nuestro gráfico de barras
-            self.frame_top_barras = ctk.CTkFrame(master=self.frames_pagos_top[0],fg_color="white")
+            self.frame_top_barras = ctk.CTkFrame(master=self.frames_pagos_top[0],fg_color="#2C3F59")
             self.frame_top_barras.pack(padx=3,pady=3,side=tk.TOP, fill=tk.BOTH, expand= True)
 
             labels = self.periodos
@@ -182,8 +178,8 @@ class Pagos(tk.Frame):
                   result = period_filtered["MONTO"].sum()
                   montos_max.append(result)
 
-            self.line_chart_canvas, self.line_chart_ax = Graficos.create_grafico_line(
-                        self.frame_top_barras, montos_max, labels, "", "MONTOS", "Grafico De Lineas")
+            self.fig_line, self.ax_line, self.canvas_line = Graficos.create_grafico_line(
+                        self.frame_top_barras, montos_max, labels, "", "MONTOS", "GRÁFICO DE LINEAS")
             
             ##SECCIÓN INFERIOR
 
@@ -193,7 +189,7 @@ class Pagos(tk.Frame):
             self.frame_bottom.pack(side=tk.BOTTOM, fill=tk.BOTH, expand = True )
 
             for F in range(2):#creamos los 2 frames que contiene el frame bottom
-                  frame = ctk.CTkFrame(master=self.frame_bottom,fg_color="white",border_width=1, border_color='#E5BEEC')
+                  frame = ctk.CTkFrame(master=self.frame_bottom,fg_color="#2C3F59",border_width=3, border_color='black')
                   self.frames_pagos_bottom[F] = frame
                   frame.pack(pady=5,padx=5,side=tk.RIGHT, fill=tk.BOTH, expand = True)
 
@@ -205,12 +201,12 @@ class Pagos(tk.Frame):
             table_data = data_cancelados
             self.table = Graficos.create_grafico_table(self.frame_table, table_columns, table_data)
 
+            #Creamos el frame que contendrá nuestra pie chart
             self.frame_bottom_circular = tk.Frame(master=self.frames_pagos_bottom[1], background="white")
             self.frame_bottom_circular.pack(padx=3,pady=3,side=tk.RIGHT, fill=tk.BOTH, expand= True)
                                                                 
             labels=["Pagado","No Pagado","Pendiente"]
-
-            self.circular_chart_canvas, self.circular_chart_ax = Graficos.create_grafico_circular(
+            self.fig_pie, self.ax_pie, self.wedges, self.autotexts, self.canvas_pie = Graficos.create_grafico_circular(
                   self.frame_bottom_circular, labels, dframeCancelados_actual["ESTADO"].value_counts(), "Trabajadores Pagados por Periodo", "Estados")
 
       def update_chart(self, *args):
@@ -219,32 +215,29 @@ class Pagos(tk.Frame):
             data_cancelados = db_connection.ejecutar_usp_Trabajadores_cancelados(selected_period)
             dframeCancelados = pd.DataFrame(data_cancelados)
 
-
             for widget in self.frame_dialog.winfo_children():
                   widget.destroy()
-
+                  
             ctk.CTkLabel(self.frame_dialog,
-                              text="MONTO TOTAL DE PAGOS: S/.{}".format(dframeCancelados[3].sum()),
+                              text="MONTO TOTAL DE PAGOS REALIZADO EN EL PERIODO ACTUAL: S/ {}".format(dframeCancelados[3].sum()),
                               text_color="black", width=10, height=30
                         ).grid(row=0,column=0,padx=5,pady=5)
+            
             #Grafico Circular
 
             labels = ["Pagado", "No Pagado", "Pendiente"]
 
-            for widget in self.frame_bottom_circular.winfo_children():
-                  widget.destroy()
+            Graficos.update_grafico_circular(self.ax_pie, 
+                                             self.wedges, 
+                                             self.autotexts, 
+                                             self.canvas_pie, 
+                                             labels, 
+                                             dframeCancelados[4].value_counts(),
+                                             "Trabajadores Pagados por Periodo",
+                                             "Estados")
             
-            self.circular_chart_canvas, self.circular_chart_ax = Graficos.create_grafico_circular(
-                  self.frame_bottom_circular, labels, dframeCancelados[4].value_counts(), "Trabajadores Pagados por Periodo", "Estados")
-            
-            #Tabla
             #Creamos el frame que contendrá nuestra tabla
-            for widget in self.frame_table.winfo_children():
-                  widget.destroy()
-
-            table_columns = ["NUMERO","DNI", "NOMBRE", "MONTO", "Estado"]
-            table_data = data_cancelados
-            self.table = Graficos.create_grafico_table(self.frame_table, table_columns, table_data)
+            Graficos.update_grafico_table(self.table, data_cancelados)
 
 class Sedes(tk.Frame):
         def __init__(self, parent, controller):
