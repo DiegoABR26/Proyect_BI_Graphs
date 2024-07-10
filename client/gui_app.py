@@ -83,7 +83,7 @@ class Frame(tk.Tk):
         self.buttonPagos = tk.Button(self.menu_lateral, text='Pagos')
         buttons_info = [
             ('Trabajador', self.buttonTrabajador,lambda: self.show_frame(Trabajador)),
-            ('Sede', self.buttonSede,lambda: self.show_frame(Sedes)),
+            ('Sedes', self.buttonSede,lambda: self.show_frame(Sedes)),
             ('Pagos',  self.buttonPagos,lambda: self.show_frame(Pagos)),
         ]
 

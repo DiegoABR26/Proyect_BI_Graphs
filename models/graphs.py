@@ -117,6 +117,7 @@ class Graficos():
                         table.insert(parent="", index="end", values=row_data)
             else:
                   table.insert(parent="", index="end", values="No hay data que mostrar")
+
             style = ttk.Style()
             style.theme_use('default')
             style.configure("Treeview.Heading", background="#F28B50", fieldbackground="black", foreground="white")
@@ -130,5 +131,43 @@ class Graficos():
         for i in table.get_children():
             table.delete(i)
         for row_data in table_data:
-            table.insert(parent="", index="end", values=row_data)          
-          
+            table.insert(parent="", index="end", values=row_data)
+
+
+      def create_grafico_bar_horizontal(frame, x_data, y_data, xlabel, ylabel, title):
+            canvas = tk.Canvas(frame)
+            canvas.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+
+            scrollbar = tk.Scrollbar(frame, orient=tk.VERTICAL, command=canvas.yview)
+            scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+            scrollable_frame = tk.Frame(canvas, bg="red")
+            scrollable_frame.bind(  
+                  "<Configure>",
+                  lambda e: canvas.configure(
+                  scrollregion=canvas.bbox("all")
+                  )
+            )
+
+            canvas.create_window((5, 10), window=scrollable_frame, anchor="nw")
+            canvas.configure(yscrollcommand=scrollbar.set)
+
+            fig, ax = plt.subplots(figsize=(5, 10), facecolor="#2C3F59")
+            ax.barh(y_data, x_data, color="#F25244")
+            ax.set_facecolor("#2C3F59")
+
+            ax.set_xlabel(xlabel, color='white')
+            ax.set_ylabel(ylabel, color='white')
+            ax.set_title(title, color='white')
+
+            ax.tick_params(axis='x', colors="white")
+            ax.tick_params(axis='y', colors="white")
+
+            for i in range(len(x_data)):
+                  ax.text(x_data[i], i, str(x_data[i]), color='white', va='center')
+
+            figure_canvas = FigureCanvasTkAgg(fig, master=scrollable_frame)
+            figure_canvas.draw()
+            figure_canvas.get_tk_widget().pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+            return fig, ax, figure_canvas
+      

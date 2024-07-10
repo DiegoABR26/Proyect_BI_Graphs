@@ -13,8 +13,17 @@ def ejecutar_sp(procedimiento):
     try:
         filas = []
         cursor.execute("EXEC "+ procedimiento)
-        filas = cursor.fetchall()
-        
+        records = cursor.fetchall()
+        id = 1
+        i=len(records)
+        for row in records:
+            rows = []
+            for i in range(len(row)):
+                rows.append(row[i])
+                i -= 1
+            filas.append(rows)
+            id += 1
+
     except pyodbc.ProgrammingError as e:
         if "No results. Previous SQL was not a query." in str(e):
             filas = []
@@ -25,7 +34,7 @@ def ejecutar_sp(procedimiento):
     
     return filas
 
-def ejecutar_usp_Trabajadores_cancelados(params:tuple):  
+def ejecutar_sp_con_params(sp:str, argumentos:str ,params:tuple):  
     conexion = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};'
                             'SERVER=KATTIA\\BYGRESGUARDO;'
                             'DATABASE=BYG_RR_HH;  '
@@ -35,16 +44,15 @@ def ejecutar_usp_Trabajadores_cancelados(params:tuple):
     cursor = conexion.cursor()
     try:
         filas = []
-        cursor.execute("EXEC usp_Trabajadores_cancelados "+"@ID_PERIODO=?",params)
+        cursor.execute("EXEC {} ".format(sp)+"{}".format(argumentos),params)
         records = cursor.fetchall()
         id = 1
+        i=len(records)
         for row in records:
             rows = []
-            rows.append(id)
-            rows.append(row[0])
-            rows.append(row[1])
-            rows.append(row[2])
-            rows.append(row[3])
+            for i in range(len(row)):
+                rows.append(row[i])
+                i -= 1
             filas.append(rows)
             id += 1
 
