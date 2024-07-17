@@ -6,6 +6,7 @@ import util.util_ventana as util_ventana
 from models.frames import Trabajador,Pagos,Sedes
 from PIL import Image, ImageFont, ImageDraw
 
+
 class Frame(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -37,17 +38,29 @@ class Frame(tk.Tk):
         self.cuerpo_principal.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
         
 
+        # Crear un ScrollableFrame con color y tamaño personalizados para el Scrollbar
+        #self.scrollable_frame = ScrollableFrame(self.cuerpo_principal, 
+        #                                        bg_color="white", 
+        #                                        scrollbar_color="#FF6347",  # Color del Scrollbar
+        #                                        scrollbar_width=20)  # Tamaño del Scrollbar
+        #self.scrollable_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        #container = self.scrollable_frame.scrollable_frame
+        #container.grid_rowconfigure(0, weight=1)
+        #container.grid_columnconfigure(0, weight=1)
+
+
         container = tk.Frame(self.cuerpo_principal)
         container.pack(
             side=tk.TOP,
             fill=tk.BOTH,
             expand= True
         )
+
         container.configure(background=COLOR_CUERPO_PRINCIPAL)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
-
-         
+          
         for F in (Trabajador, Sedes, Pagos):
             frame = F(container, self)
             self.frames[F] = frame

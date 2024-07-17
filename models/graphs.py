@@ -31,7 +31,6 @@ class Graficos():
             canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
             return fig, ax, canvas
 
-
       def create_grafico_circular(frame, labels, data, title, title_legend="leyenda"):#(frame, labels, data, title, title_legend="leyenda", canvas=None, ax=None):
             fig, ax = plt.subplots(figsize=(5, 2), subplot_kw=dict(aspect="equal"), facecolor="#2C3F59")
             colors = ["#6698F6", "#6EE1F8", "#F7FAA3"]
@@ -133,24 +132,20 @@ class Graficos():
         for row_data in table_data:
             table.insert(parent="", index="end", values=row_data)
 
-
       def create_grafico_bar_horizontal(frame, x_data, y_data, xlabel, ylabel, title):
-            canvas = tk.Canvas(frame)
-            canvas.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+            #scrollbar = tk.Scrollbar(frame, orient=tk.VERTICAL, command=canvas.yview)
+            #scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-            scrollbar = tk.Scrollbar(frame, orient=tk.VERTICAL, command=canvas.yview)
-            scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+            #scrollable_frame = tk.Frame(canvas, bg="red")
+            #scrollable_frame.bind(  
+            #      "<Configure>",
+            #      lambda e: canvas.configure(
+            #      scrollregion=canvas.bbox("all")
+            #      )
+            #)
 
-            scrollable_frame = tk.Frame(canvas, bg="red")
-            scrollable_frame.bind(  
-                  "<Configure>",
-                  lambda e: canvas.configure(
-                  scrollregion=canvas.bbox("all")
-                  )
-            )
-
-            canvas.create_window((5, 10), window=scrollable_frame, anchor="nw")
-            canvas.configure(yscrollcommand=scrollbar.set)
+            #canvas.create_window((5, 10), window=scrollable_frame, anchor="nw")
+            #canvas.configure(yscrollcommand=scrollbar.set)
 
             fig, ax = plt.subplots(figsize=(5, 10), facecolor="#2C3F59")
             ax.barh(y_data, x_data, color="#F25244")
@@ -166,7 +161,7 @@ class Graficos():
             for i in range(len(x_data)):
                   ax.text(x_data[i], i, str(x_data[i]), color='white', va='center')
 
-            figure_canvas = FigureCanvasTkAgg(fig, master=scrollable_frame)
+            figure_canvas = FigureCanvasTkAgg(fig, master=frame)
             figure_canvas.draw()
             figure_canvas.get_tk_widget().pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
             return fig, ax, figure_canvas

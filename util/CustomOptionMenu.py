@@ -2,7 +2,7 @@ import tkinter as tk
 import customtkinter as ctk
 
 class CustomOptionMenu(ctk.CTkOptionMenu):
-    def __init__(self, *args, dropdown_height=200, **kwargs):
+    def __init__(self, *args, dropdown_height=10, **kwargs):
         super().__init__(*args, **kwargs)
         self.dropdown_height = dropdown_height
 
