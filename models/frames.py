@@ -2,11 +2,11 @@ import pandas as pd
 import tkinter as tk
 import config as cfg
 import customtkinter as ctk
+from tkinter import filedialog
 from config import *
 from datalayer import db_connection
 from .graphs import Graficos
 from datetime import date, datetime
-from util import CustomOptionMenu
 from util.scrollable_frame import ScrollableFrame  # Importa la clase de utilidad
 
 class Trabajador(tk.Frame):
@@ -143,14 +143,14 @@ class Pagos(tk.Frame):
                                                     scrollbar_width=20)  # Tamaño del Scrollbar
             self.scrollable_frame.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
             
-            container = self.scrollable_frame.scrollable_frame
+            #container = self.scrollable_frame.scrollable_frame
             #container.pack(side=tk.RIGHT, fill=tk.BOTH,expand=True)
-            container.grid_rowconfigure(0, weight=1)
-            container.grid_columnconfigure(0, weight=1)
+            #container.grid_rowconfigure(0, weight=1)
+            #container.grid_columnconfigure(0, weight=1)
 
             #SECCIÓN 1
             self.frames_pagos_top = {}#array de los frames del top
-            self.frame_top = tk.Frame(master=container, bg=COLOR_CUERPO_PRINCIPAL)
+            self.frame_top = tk.Frame(master=self.scrollable_frame.scrollable_frame, bg=COLOR_CUERPO_PRINCIPAL)
             self.frame_top.pack(side=tk.TOP, fill=tk.BOTH, expand = True)
             
             for F in range(1): #creamos 1 frame que contiene el frame top(modificamos el número de recuadros requeridos)
@@ -178,7 +178,7 @@ class Pagos(tk.Frame):
 
             #Creamos el FRAME PADRE_BOTTOM
             self.frames_pagos_bottom = {}#array de los frames del bottom
-            self.frame_bottom =tk.Frame(master=container,bg=COLOR_CUERPO_PRINCIPAL)
+            self.frame_bottom =tk.Frame(master=self.scrollable_frame.scrollable_frame,bg=COLOR_CUERPO_PRINCIPAL)
             self.frame_bottom.pack(side=tk.TOP, fill=tk.BOTH, expand = True )
 
             for F in range(2):#creamos los 2 frames que contiene el frame bottom
@@ -204,7 +204,7 @@ class Pagos(tk.Frame):
             
             #SECCIÓN 3
             self.frame_bottom_3_array = {}#array de los frames del top
-            self.frame_bottom_3 = tk.Frame(master=container, bg=COLOR_CUERPO_PRINCIPAL)
+            self.frame_bottom_3 = tk.Frame(master=self.scrollable_frame.scrollable_frame, bg=COLOR_CUERPO_PRINCIPAL)
             self.frame_bottom_3.pack(side=tk.TOP, fill=tk.BOTH, expand = True)
             
             for F in range(2): #creamos 1 frame que contiene el frame top(modificamos el número de recuadros requeridos)
@@ -265,12 +265,15 @@ class Sedes(tk.Frame):
             self.id_sede = []
             self.nombre_sedes_mapping={}
             self.option_selected = tk.StringVar()
+            self.check_selected = {}
+            self.selected_table = None
             self.dfdatos_trabajadores = pd.DataFrame(
                         data = db_connection.ejecutar_sp("usp_ListaTrabajadores"),
                         columns=["ID", "DNI","NOMBRE","HORARIO","CONTRATO","FECHA_INICIO","ESTADO","FECHA_FIN","SEDE","CORREO","NUMERO"])
             self.cuerpo_principal()
             self.init_widgets_sedes()
             self.option_selected.trace("w", self.update_chart)
+            #self.check_selected.trace("w", self.update_horizontal_chart)
       
       def cuerpo_principal(self):
             self.cuerpo_principal_top=ctk.CTkFrame(master=self, fg_color="#2C3F59")
@@ -313,7 +316,8 @@ class Sedes(tk.Frame):
                                                         width=300, 
                                                         height=40,
                                                         font=("Arial",15),
-                                                        hover_color="#F5E874",border_color="#F5E874",border_width=3)
+                                                        hover_color="#F5E874",border_color="#F5E874",border_width=3,
+                                                        command=self.export_to_excel)
             self.export_excel_trabxsede.pack(side=ctk.TOP, expand= True, fill = ctk.BOTH)
 
       def init_widgets_sedes(self):
@@ -330,6 +334,7 @@ class Sedes(tk.Frame):
 
             self.frame_table_top =  ctk.CTkFrame(master=self.frames_sedes_top[0], fg_color="#2C3F59")
             self.frame_table_top.pack(padx=3,pady=3,side= ctk.TOP, fill=ctk.BOTH, expand=True)
+            
 
             table_columns=["SEDE","CANTIDAD"]
             cantidad_sedes = {"SEDE":self.dfdatos_trabajadores["SEDE"].value_counts().index
@@ -337,10 +342,12 @@ class Sedes(tk.Frame):
             
             dfTable_sedes = pd.DataFrame(data=cantidad_sedes,columns=table_columns)
             self.table = Graficos.create_grafico_table(self.frame_table_top, table_columns=table_columns , table_data=dfTable_sedes.values.tolist())
+            self.table.bind("<Button-1>", self.on_frame_click)
       
             #Creamos el frame que contendrá nuestra tabla
-            self.frame_table_top_2 = tk.Frame(master= self.frames_sedes_top[1],background="#2C3F59")
+            self.frame_table_top_2 = ctk.CTkFrame(master= self.frames_sedes_top[1],fg_color="#2C3F59")
             self.frame_table_top_2.pack(padx=3,pady=3,side=tk.TOP, fill=tk.BOTH, expand= True)
+            
 
             # Filtrar el DataFrame para las columnas requeridas
             table_columns = ["DNI", "NOMBRE", "SEDE", "ESTADO"]
@@ -351,7 +358,7 @@ class Sedes(tk.Frame):
 
             # Crear la tabla con los datos filtrados
             self.table2 = Graficos.create_grafico_table(self.frame_table_top_2, table_columns, table_data)
-                           
+            self.table2.bind("<Button-1>", self.on_frame_click_2)               
             ##SECCIÓN INFERIOR
 
             #Creamos el FRAME PADRE_BOTTOM
@@ -367,16 +374,90 @@ class Sedes(tk.Frame):
 
             #Creamos el frame que contendrá nuestro gráfico de barras
             self.frame_bar_chart = tk.Frame(master= self.frames_sedes_bottom[0], background="#2C3F59")
-            self.frame_bar_chart.pack(side=tk.LEFT, fill=tk.BOTH, expand= True)
+            self.frame_bar_chart.pack(side=tk.LEFT, fill=tk.BOTH, expand= True, padx=3, pady=3)
 
             # Crear horizontal_bar_chart con los datos de las sedes
             sede_counts = self.dfdatos_trabajadores["SEDE"].value_counts()
 
-            Graficos.create_grafico_bar_horizontal(self.frame_bar_chart,x_data=sede_counts.values,y_data=sede_counts.index,
-                        xlabel='Cantidad de Trabajadores',
-                        ylabel='Sede',
-                        title='Cantidad de Trabajadores por Sede')
+            self.figure_horizonatal_chart,self.ax_horizontal_chart,self.canvas_horizontal_chart = Graficos.create_grafico_bar_horizontal(
+                  self.frame_bar_chart,x_data=sede_counts.values,y_data=sede_counts.index,xlabel="",ylabel="Cantidad de Trabajadores",title='Cantidad de Trabajadores por Sede')
             
+            #self.frame_bar_chart_2 = ctk.CTkFrame(master=self.frames_sedes_bottom[0], fg_color="#2C3F59")
+            #self.frame_bar_chart_2.pack(side=tk.RIGHT, fill=tk.BOTH, padx=3,pady=3)
+
+            # Crear el frame con scroll
+            self.frame_scroll = tk.Frame(master=self.frames_sedes_bottom[0], bg="#2C3F59", highlightthickness=0)
+            self.frame_scroll.pack(side=tk.RIGHT, fill=tk.BOTH, padx=3, pady=3)
+
+            # Crear canvas y scrollbar
+            self.canvas = tk.Canvas(self.frame_scroll, bg="#2C3F59", highlightthickness=0, width=170)
+            self.scrollbar = tk.Scrollbar(self.frame_scroll, orient="vertical", command=self.canvas.yview)
+            self.scrollable_frame = tk.Frame(self.canvas, bg="#2C3F59")
+
+            self.scrollable_frame.bind(
+                  "<Configure>",
+                  lambda e: self.canvas.configure(
+                  scrollregion=self.canvas.bbox("all")
+                  )
+            )
+
+            self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+            self.canvas.configure(yscrollcommand=self.scrollbar.set)
+
+            self.canvas.pack(side="left", fill="both")
+            self.scrollbar.pack(side="right", fill="y")
+
+            label_horizontal= ctk.CTkLabel(master = self.scrollable_frame, text="SEDES", text_color="white",font=("Arial",10))
+            label_horizontal.pack(side=tk.TOP, fill=tk.BOTH)
+
+            check_options = {}
+
+            for i in range(len(self.sedes)):
+                  nombre_sede = self.sedes.iloc[i,1]
+                  var = tk.IntVar()
+                  self.check_selected[nombre_sede] = var
+                  sede = ctk.CTkCheckBox(master = self.scrollable_frame
+                                         ,fg_color="green"
+                                         ,text=nombre_sede
+                                         ,text_color="white"
+                                         ,variable=var
+                                         ,onvalue=1
+                                         ,command=self.update_horizontal_chart
+                                         ,offvalue=0)
+                  check_options[i] = sede
+                  sede.pack(pady=1,padx=1,side=tk.TOP, fill=tk.BOTH, expand = True, anchor="n")
+
+      def on_frame_click(self, event):
+            # Reset the border color for all frames
+            self.frames_sedes_top[1].configure(border_color="black")
+            self.frames_sedes_top[0].configure(border_color="red")
+            self.selected_table = self.table
+            
+      def on_frame_click_2(self,event):
+            # Reset the border color for all frames
+            self.frames_sedes_top[0].configure(border_color="black")
+            self.frames_sedes_top[1].configure(border_color="red")
+            self.selected_table = self.table2
+
+      def export_to_excel(self):
+            if self.selected_table is None:
+                  print("No table selected for export")
+                  return
+
+            # Obtener datos de la tabla seleccionada en formato de DataFrame
+            data = [self.selected_table.item(item)["values"] for item in self.selected_table.get_children()]
+            columns = self.selected_table["columns"]
+            df = pd.DataFrame(data, columns=columns)
+
+            # Mostrar diálogo de guardado de archivo
+            file_path = filedialog.asksaveasfilename(defaultextension=".xlsx",
+                                                      filetypes=[("Excel files", "*.xlsx"),
+                                                                  ("All files", "*.*")])
+            if file_path:
+                  # Guardar DataFrame en archivo Excel
+                  df.to_excel(file_path, index=False)
+                  print(f"Archivo guardado en {file_path}")
+
       def update_chart(self, *args):
 
             selected_sede = None
@@ -403,27 +484,17 @@ class Sedes(tk.Frame):
             listdatos_trabajadores = dfdatos_trabajadores[table_columns]
             Graficos.update_grafico_table(self.table2, listdatos_trabajadores.values.tolist())
 
+      def update_horizontal_chart(self, *args):
+            selected_sedes = [nombre_sede for nombre_sede, var in self.check_selected.items() if var.get() == 1]
 
+            if not selected_sedes:
+                  self.ax_horizontal_chart.clear()
+                  self.canvas_horizontal_chart.draw()
+                  return
+            df_filtered = self.dfdatos_trabajadores[self.dfdatos_trabajadores["SEDE"].isin(selected_sedes)]
+            sede_counts = df_filtered["SEDE"].value_counts()
+            Graficos.update_horizontal_chart(self.ax_horizontal_chart,sede_counts.values,sede_counts.index,title='Cantidad de Trabajadores por Sede')
 
-            #for widget in self.frame_dialog.winfo_children():
-            #      widget.destroy()
-            
-            #Grafico Circular
-
-            #labels = ["No Pagado", "Pagado",  "Pendiente"]
-
-            #Graficos.update_grafico_circular(self.ax_pie, 
-            #                                 self.wedges, 
-            #                                 self.autotexts, 
-            #                                self.canvas_pie, 
-            #                                 labels, 
-            #                                 dframeCancelados[4].value_counts(),
-            #                                 "Trabajadores Pagados por Periodo",
-            #                                 "Estados")
-            
-            #Creamos el frame que contendrá nuestra tabla
-            #Graficos.update_grafico_table(self.table, data_cancelados)
-     
 
   
     

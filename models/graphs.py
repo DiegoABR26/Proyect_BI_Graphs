@@ -72,7 +72,7 @@ class Graficos():
             canvas.mpl_connect("motion_notify_event", on_hover)
             return fig, ax, wedges, autotexts, canvas
       
-      def update_grafico_circular(ax, wedges, autotexts, canvas, labels, data, title, title_legend,):
+      def update_grafico_circular(ax, wedges, autotexts, canvas, labels, data, title, title_legend):
         ax.clear()
         wedges, texts, autotexts = ax.pie(data, 
                                           autopct=lambda pct: f"{pct:.1f}%\n({int(np.round(pct / 100. * np.sum(data))):d})",
@@ -127,36 +127,34 @@ class Graficos():
             return table
       
       def update_grafico_table(table, table_data):
-        for i in table.get_children():
-            table.delete(i)
-        for row_data in table_data:
-            table.insert(parent="", index="end", values=row_data)
-
+            if len(table_data) > 0:
+                  for i in table.get_children():
+                      table.delete(i)
+                  for row_data in table_data:
+                        table.insert(parent="", index="end", values=row_data)
+                        #for row_data in table_data:
+                        #      table.insert(parent="", index="end", values=row_data)      
+            else:
+                  for i in table.get_children():
+                      table.delete(i)
+                  table.insert(parent="", index="end", values="No hay data")
+                  
       def create_grafico_bar_horizontal(frame, x_data, y_data, xlabel, ylabel, title):
-            #scrollbar = tk.Scrollbar(frame, orient=tk.VERTICAL, command=canvas.yview)
-            #scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-
-            #scrollable_frame = tk.Frame(canvas, bg="red")
-            #scrollable_frame.bind(  
-            #      "<Configure>",
-            #      lambda e: canvas.configure(
-            #      scrollregion=canvas.bbox("all")
-            #      )
-            #)
-
-            #canvas.create_window((5, 10), window=scrollable_frame, anchor="nw")
-            #canvas.configure(yscrollcommand=scrollbar.set)
-
             fig, ax = plt.subplots(figsize=(5, 10), facecolor="#2C3F59")
             ax.barh(y_data, x_data, color="#F25244")
             ax.set_facecolor("#2C3F59")
 
-            ax.set_xlabel(xlabel, color='white')
-            ax.set_ylabel(ylabel, color='white')
+            ax.set_xlabel(xlabel,color='white')
+            #ax.set_ylabel(ylabel, color='white')
             ax.set_title(title, color='white')
 
-            ax.tick_params(axis='x', colors="white")
-            ax.tick_params(axis='y', colors="white")
+            font_ticks = {'family': 'Arial', 'size': 7}
+
+            ax.tick_params(axis='x', colors='white', labelsize=font_ticks['size'])
+            ax.tick_params(axis='y', colors='white', labelsize=font_ticks['size'])
+
+            ax.set_xlim([0,max(x_data)])
+            ax.set_xticks([i for i in range(max(x_data)+1)])
 
             for i in range(len(x_data)):
                   ax.text(x_data[i], i, str(x_data[i]), color='white', va='center')
@@ -166,3 +164,24 @@ class Graficos():
             figure_canvas.get_tk_widget().pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
             return fig, ax, figure_canvas
       
+      def update_horizontal_chart(ax, x_data, y_data,title):
+            #fig, ax = plt.subplots(figsize=(5, 10), facecolor="#2C3F59")
+            ax.clear()
+
+            ax.barh(y_data, x_data, color="#F25244")
+            ax.set_facecolor("#2C3F59")
+            
+            ax.set_title(title, color='white')
+
+            font_ticks = {'family': 'Arial', 'size': 10}
+
+            ax.tick_params(axis='x', colors='white', labelsize=font_ticks['size'])
+            ax.tick_params(axis='y', colors='white', labelsize=font_ticks['size'])
+
+            ax.set_xlim([0,max(x_data)])
+            ax.set_xticks([i for i in range(max(x_data)+1)])
+
+            for i in range(len(x_data)):
+                  ax.text(x_data[i], i, str(x_data[i]), color='white', va='center')
+
+            ax.figure.canvas.draw()
